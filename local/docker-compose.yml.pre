@@ -15,6 +15,16 @@ cadvisor:
 ####################################
 
 
+#### Host images ###
+
+static:
+  image: nginx
+  volumes:
+    - {{NEXT_DIR}}/local/image_search/images:/public
+    - {{NEXT_DIR}}/local/image_search/conf.d:/etc/nginx/conf.d
+  ports:
+    - 8999:80
+
 ######## MINION MACHINE #########
 
 minionredis:

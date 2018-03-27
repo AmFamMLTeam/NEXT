@@ -1,0 +1,19 @@
+app_id: ImageSearch
+args:
+  alg_list:
+    - {alg_id: RandomSampling, alg_label: RandomSampling}
+  algorithm_management_settings:
+    mode: custom
+  debrief: Test debrief
+  instructions: Test instructions
+  participant_to_algorithm_management: one_to_many
+  seed_target: 'i0022.png'
+  feature_file: ''
+  targets:
+    targetset:
+      - {image: 'i0022.png'}
+      - {image: 'i0036.png'}
+      - {image: 'i0114.png'}
+      - {image: 'i0200.png'}
+      - {image: 'i0322.png'}
+      - {image: 'i0572.png'}

@@ -1,0 +1,58 @@
+<style>
+  html, body {
+    height: 100%;
+  }
+
+  div.container {
+    height: 100%;
+  }
+
+  #wrapper {
+    height: 85%;
+  }
+
+  div.row > div.col-xs-6 {
+    height: 100%;
+    outline: 1px solid black;
+  }
+
+  div.row > div.col-xs-12 {
+    height: 100%;
+    outline: 1px solid black;
+  }
+
+  #wrapper > div.row {
+    height: 50%;
+  }
+
+  #wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
+<br/>
+<div class="row" style="height:50%">
+  <div class="col-xs-12">
+    <img class="center-block" src=http://localhost:8999/{{ query.target.image }}>
+  </div>
+</div>
+<br/>
+
+<div class="row">
+  <div class="btn btn-primary" id="yes">YES</div> <div class="btn btn-primary" id="no">NO</div>
+</div>
+
+<script>
+  var submit = function (label) {
+    next_widget.processAnswer({'index': {{ query.index }}, 'label': label})
+  };
+
+  $('#yes').click(function() { submit(1) });
+  $('#no').click(function() { submit (0) });
+
+
+</script>
+</div>
+

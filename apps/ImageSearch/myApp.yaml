@@ -1,0 +1,33 @@
+extends: [base.yaml]
+initExp:
+  args:
+    app_id:
+      values: [ImageSearch]
+    args:
+      values:
+        alg_list:
+          values:
+            values:
+              alg_id:
+                description: Supported algorithm types for ImageSearch.
+                values: [RandomSampling]
+        instructions:
+          default:
+          optional: true
+        seed_target:
+          type: str
+        feature_file:
+          type: str
+
+processAnswer:
+  args:
+    args:
+      type: dict
+      values:
+        index:
+          description: The id of the target that was labeled
+          type: num
+        label:
+          type: num
+
+

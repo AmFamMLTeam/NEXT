@@ -1,0 +1,36 @@
+initExp:
+  args:
+    n:
+      description: Number of targets
+      type: num
+    seed_i:
+      description: Index of seeds
+      type: num
+  rets:
+    type: bool
+    description: A boolean indicating success
+    values: true
+
+
+getQuery:
+  rets:
+    description: The triplet to ask about
+    type: num
+
+
+processAnswer:
+    args:
+      index:
+        description: The ID of the labeled taget
+        type: num
+      label:
+        description: The label
+        type: num
+    rets:
+      type: bool
+      description: A boolean indicating success
+      values: true
+
+getModel:
+  rets:
+    type: bool

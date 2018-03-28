@@ -53,7 +53,7 @@ def launch(init_filename, targets_filename=None):
 
     # -- encode the experiment definition for transmission to the backend
     data_header = "data:application/x-yaml;base64,"
-    
+
     encoded_args = base64.encodestring(yaml.dump(init))
     encoded_attrs = OrderedDict(args=data_header+encoded_args)
 
@@ -78,8 +78,10 @@ def launch(init_filename, targets_filename=None):
         sys.exit()
 
     dashboard_url = host_url + '/dashboard/experiment_dashboard/{}/{}'.format(response['exp_uid'], init['app_id'])
+    query_url = host_url + '/query/query_page/query_page/{}'.format(response['exp_uid'])
     print('Dashboard URL: {}'.format(dashboard_url))
     print('NEXT Home URL: {}'.format(host_url + '/home'))
+    print('Query URL: {}'.format(query_url))
 
     return response
 

@@ -2,13 +2,14 @@ app_id: ImageSearch
 args:
   alg_list:
     - {alg_id: RandomSampling, alg_label: RandomSampling}
+    - {alg_id: NearestNeighbor, alg_label: NearestNeighbor}
   algorithm_management_settings:
     mode: custom
   debrief: Test debrief
   instructions: Test instructions
   participant_to_algorithm_management: one_to_many
   seed_target: 'i0022.png'
-  feature_file: ''
+  feature_file: 'test'
   targets:
     targetset:
       - {image: 'i0022.png'}

@@ -1,0 +1,14 @@
+app_id: ImageSearch
+args:
+  alg_list:
+    - {alg_id: RandomSampling, alg_label: RandomSampling}
+    - {alg_id: NearestNeighbor, alg_label: NearestNeighbor}
+  algorithm_management_settings:
+    mode: custom
+  debrief: Test debrief
+  instructions: Test instructions
+  participant_to_algorithm_management: one_to_many
+  feature_file: 'cifar-fc-cats-10.npz'
+  label_file: 'cifar-cats-10-labels.npz'
+  targets:
+    targetset: 45500

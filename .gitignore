@@ -1,3 +1,7 @@
+local/docker-compose.yml
+features/
+public/
+
 venv/
 
 # Mac
@@ -35,5 +39,3 @@ nohup.out
 
 # vim
 *.swp
-
-local/docker-compose.yml

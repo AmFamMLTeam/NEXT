@@ -39,9 +39,13 @@ class BaseAlgorithm:
                 query = butler.algorithms.pop(key='queue')
                 pops = butler.algorithms.increment(key='pops', value=1)
                 if pops % FILL_EVERY == 0:
-                    butler.job('fill_queue', {'k': QUEUE_SIZE})
+                    #butler.job('fill_queue', {'k': QUEUE_SIZE})
+                    pass
             except IndexError:
                 time.sleep(.1)
+        if not is_locked(butler.algorithms.memory.lock('fill_queue')):
+            butler.job('fill_queue', {'k': QUEUE_SIZE,
+                                      'queue': butler.algorithms.get(key='queue')})
         return query
 
     def processAnswer(self, butler, index, label):
@@ -78,21 +82,24 @@ class BaseAlgorithm:
 class NearestNeighbor(BaseAlgorithm):
     def fill_queue(self, butler, args):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):
+            debug_print('fill_queue is running already')
+            return
+        if len(butler.algorithms.get(key='queue')) > len(args['queue']):
+            debug_print('fill_queue called already')
             return
         with butler.algorithms.memory.lock('fill_queue'):
+            debug_print('filling queue')
+            start = len(butler.algorithms.get(key='queue'))
             X = self.select_features(butler, {})
             labels = dict(butler.algorithms.get(key='labels'))
             unlabeled = []
             positives = []
             n = butler.algorithms.get(key='n')
-            debug_print('iterating through n')
-            t0 = time.time()
             for i in xrange(n):
                 if i not in labels:
                     unlabeled.append(i)
                 elif labels[i] == 1:
                     positives.append(i)
-            debug_print('took {}s'.format(time.time() - t0))
             target = random.choice(positives)
             x = X[target]
             X = X[unlabeled]
@@ -101,6 +108,11 @@ class NearestNeighbor(BaseAlgorithm):
             dists = np.linalg.norm(X - x, axis=1)
             debug_print('took {}s'.format(time.time() - t0))
             dists = np.argsort(dists)
+            end = len(butler.algorithms.get(key='queue'))
+            active = end < start
+            if active:
+                butler.job('fill_queue', {'k': QUEUE_SIZE,
+                                          'queue': butler.algorithms.get(key='queue')})
             self.append_queries(butler, dists[:args.get('k', QUEUE_SIZE)])
 
 
@@ -109,6 +121,7 @@ def get_X(butler):
         butler.db.store = dict()
     if butler.exp_uid not in butler.db.store:
         debug_print('loading features from disk')
+        t0 = time.time()
         feature_file = butler.experiment.get(key='args')['feature_file']
         feature_file = os.path.join('/', 'next_backend', 'features', feature_file)
         if not feature_file.endswith('.npz'):
@@ -118,5 +131,5 @@ def get_X(butler):
         n2 = butler.algorithms.get(key='n')
         if n1 != n2:
             raise ValueError('feature matrix does not match number of targets! ({}!={})'.format(n1, n2))
-    debug_print('features have shape: {}'.format(butler.db.store[butler.exp_uid].shape))
+        debug_print('took {}s'.format(time.time() - t0))
     return butler.db.store[butler.exp_uid]

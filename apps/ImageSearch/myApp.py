@@ -67,4 +67,4 @@ class MyApp:
         return alg()
 
     def chooseAlg(self, butler, alg_list, _):
-        return random.choice(alg_list)
+        return min(alg_list, key=lambda alg: butler.algorithms.get(uid=alg['alg_label'], key='n_responses'))

@@ -1,0 +1,2 @@
+- {alg_id: RandomSampling, alg_label: RandomSampling}
+- {alg_id: NearestNeighbor, alg_label: NearestNeighbor}

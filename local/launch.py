@@ -40,8 +40,11 @@ def get_backend():
     }
 
 def launch(init_filename, targets_filename=None):
-    with open(init_filename, 'r') as f:
-        init = yaml.load(f)
+    if isinstance(init_filename, dict):
+        init = init_filename
+    else:
+        with open(init_filename, 'r') as f:
+            init = yaml.load(f)
 
     if targets_filename:
         with open(targets_filename, 'r') as f:

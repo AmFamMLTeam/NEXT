@@ -1,0 +1,1 @@
+from apps.ImageSearch.algs.base import LassoNN as MyAlg

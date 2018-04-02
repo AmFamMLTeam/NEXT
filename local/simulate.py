@@ -13,7 +13,7 @@ from next.apps import test_utils
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-q', '--queries', type=int, default=100, help='number of queries per algorithm')
+parser.add_argument('-q', '--queries', type=int, default=50, help='number of queries per algorithm')
 parser.add_argument('-p', '--participants', type=int, default=2, help='number of participants')
 parser.add_argument('-y', '--labels', type=str, default='cifar-cats-10-labels.npz', help='filename for labels file')
 parser.add_argument('-X', '--features', type=str, default='cifar-fc-cats-10.npz', help='filename for features file')

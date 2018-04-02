@@ -1,3 +1,4 @@
+.vscode/
 local/docker-compose.yml
 features/
 public/

@@ -56,9 +56,6 @@ class MyApp:
     def processAnswer(self, butler, alg, args):
         index = args['index']
         label = args['label']
-        debug_print('got label {} for index {}'.format(butler.alg_id,
-                                                       label,
-                                                       index))
         alg_args = {'index': index, 'label': label}
         alg(alg_args)
         return args

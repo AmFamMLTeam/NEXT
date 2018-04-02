@@ -43,7 +43,7 @@ class MyApp:
         self.TargetManager.set_targetset(butler.exp_uid, targets)
         del args['targets']
 
-        alg_args = {'seed_i': seed_i, 'n': n}
+        alg_args = {'seed_i': seed_i, 'n': n, 'alg_args': args['alg_args']}
         init_algs(alg_args)
 
         return args

@@ -10,7 +10,7 @@ initExp:
             values:
               alg_id:
                 description: Supported algorithm types for ImageSearch.
-                values: [RandomSampling, NearestNeighbor, LassoNN]
+                values: [RandomSampling, NearestNeighbor, LassoNN, NLassoNN, MarginalNN, MarginalPlusNN]
         instructions:
           default:
           optional: true
@@ -22,6 +22,8 @@ initExp:
         label_file:
           type: str
           optional: true
+        alg_args:
+          type: any
 
 processAnswer:
   args:

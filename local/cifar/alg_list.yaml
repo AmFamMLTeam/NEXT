@@ -1,3 +1,4 @@
 - {alg_id: RandomSampling, alg_label: RandomSampling}
-- {alg_id: NearestNeighbor, alg_label: NearestNeighbor}
-- {alg_id: NNLasso, alg_label: NNLasso}
+#- {alg_id: LassoNN, alg_label: LassoNN}
+# - {alg_id: NLassoNN, alg_label: lasso-nn-3, args: {N: 3}}
+- {alg_id: MarginalPlusNN, alg_label: marg-nn-plus-2, args: {N: 2}}

@@ -37,9 +37,18 @@ def main():
 
     config = base_config.copy()
 
-    with open(args.alg_list) as f:
-        config['args']['alg_list'] = yaml.load(f)
+    alg_args = dict()
 
+    with open(args.alg_list) as f:
+        alg_list = yaml.load(f)
+
+    for alg in alg_list:
+        alg_args[alg['alg_label']] = alg.get('args', {})
+        if 'args' in alg:
+            del alg['args']
+
+    config['args']['alg_list'] = alg_list
+    config['args']['alg_args'] = alg_args
     config['args']['feature_file'] = args.features
     config['args']['label_file'] = args.labels
     y = np.load(os.path.join(NEXT, 'features', args.labels))

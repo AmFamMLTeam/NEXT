@@ -1,1 +1,1 @@
-from apps.ImageSearch.algs.base import LassoNN as MyAlg
+from apps.ImageSearch.algs.LassoNN.LassoNN import LassoNN as MyAlg

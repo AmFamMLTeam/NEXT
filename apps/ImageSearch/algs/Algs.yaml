@@ -6,6 +6,8 @@ initExp:
     seed_i:
       description: Index of seeds
       type: num
+    alg_args:
+      type: any
   rets:
     type: bool
     description: A boolean indicating success

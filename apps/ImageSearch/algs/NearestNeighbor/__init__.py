@@ -1,1 +1,1 @@
-from apps.ImageSearch.algs.base import NearestNeighbor as MyAlg
+from apps.ImageSearch.algs.NearestNeighbor.NearestNeighbor import NearestNeighbor as MyAlg

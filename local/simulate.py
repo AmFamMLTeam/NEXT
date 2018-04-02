@@ -4,7 +4,9 @@ import os
 import yaml
 import numpy as np
 import time
-from multiprocessing import Pool
+from multiprocessing import Pool, Queue, Process
+
+from tqdm import tqdm
 
 NEXT = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(NEXT)
@@ -62,6 +64,9 @@ def main():
     q_per_p = n_queries // args.participants
     p1_q = q_per_p + (n_queries - q_per_p * args.participants)
 
+    results_queue = Queue()
+    procs = []
+
     pargs = []
     for i in range(args.participants):
         arg = dict()
@@ -70,13 +75,25 @@ def main():
         arg['d'] = args.delay
         arg['i'] = i
         arg['exp_uid'] = exp_uid
+        arg['results_queue'] = results_queue
+        procs.append(Process(target=one_participant, args=(arg,)))
         pargs.append(arg)
 
-    pool = Pool(args.concurrency)
-    pool.map(one_participant, pargs)
+    for p in procs:
+        p.start()
+
+    for _ in tqdm(xrange(n_queries)):
+        results_queue.get()
+
+    for p in procs:
+        p.join()
+
+    # pool = Pool(args.concurrency)
+    # pool.map(one_participant, pargs)
 
 
 def one_participant(parg):
+    results_queue = parg['results_queue']
     for _ in range(parg['q']):
         response, _ = test_utils.getQuery({'exp_uid': parg['exp_uid'],
                                            'args': {
@@ -94,6 +111,7 @@ def one_participant(parg):
                                       'label': parg['y'][index],
                                       'index': index
                                   }})
+        results_queue.put(True)
 
 
 if __name__ == '__main__':

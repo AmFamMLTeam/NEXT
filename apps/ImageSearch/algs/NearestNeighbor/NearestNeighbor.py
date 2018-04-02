@@ -39,5 +39,5 @@ class NearestNeighbor(BaseAlgorithm):
             dists = np.argsort(dists)
             queries = butler.algorithms.get(key='queries') - butler.algorithms.get(key='last_filled')
             queue_size = max(QUEUE_SIZE, queries * 2)
-            self.set_queue(butler, dists[:queue_size])
+            self.set_queue(butler, [unlabeled[i] for i in dists[:queue_size]])
             butler.algorithms.set(key='last_filled', value=butler.algorithms.get(key='queries'))

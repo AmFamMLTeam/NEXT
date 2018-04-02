@@ -22,11 +22,10 @@ class MarginalPlusNN(MarginalNN):
             unlabeled_sample = random.sample(unlabeled, n_sample)
         sample = labeled + unlabeled_sample
         y = [labels.get(i, 0) for i in sample]
-        labeled = list(labels.keys())
         X = get_X(butler)
         if can_fit(y):
             N = butler.algorithms.get(key='N')
-            mask = MarginalRegression().fit(X[labeled], y).topfeatures(len(y) // N)
+            mask = MarginalRegression().fit(X[sample], y).topfeatures(len(y) // N)
             butler.algorithms.set(key='n_coefs', value=np.count_nonzero(mask))
             return X[:, mask]
         else:

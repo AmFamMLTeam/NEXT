@@ -61,11 +61,12 @@ class MyApp:
             debug_print('{} found so far'.format(duplicates), color='red')
             label = labels[index]
             app = App(butler.app_id, butler.exp_uid, butler.db, butler.ell)
-            alg = get_app_alg(butler.app_id, alg_id)
+            _alg = get_app_alg(butler.app_id, alg_id)
             _butler = Butler(butler.app_id, butler.exp_uid, self.TargetManager, butler.db, butler.ell, alg_label, alg_id)
-            app.run_alg(_butler, alg_label, alg, 'processAnswer', {'index': index,
-                                                                   'label': label})
+            app.run_alg(_butler, alg_label, _alg, 'processAnswer', {'index': index,
+                                                                    'label': label})
             _, _, index = alg()
+            labels = dict(butler.experiment.get(key='labels'))
 
         target = butler.targets.get_target_item(butler.exp_uid, index)
         return {'target': target, 'index': index}

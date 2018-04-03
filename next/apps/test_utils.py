@@ -26,7 +26,6 @@ def initExp(initExp_args_dict, assert_200=True):
     #################################################
     url = "http://"+HOSTNAME+"/api/experiment/"+exp_uid
     response = requests.get(url)
-    print "GET experiment response =", response.text, response.status_code
     if assert_200: assert response.status_code is 200
     initExp_response_dict = json.loads(response.text)
     return initExp_response_dict, {'exp_uid': exp_uid}

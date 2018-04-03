@@ -26,7 +26,7 @@ class BaseAlgorithm(object):
         query = None
         while query is None:
             try:
-                query = butler.algorithms.pop(key='queue')
+                query = butler.algorithms.pop(key='queue', value=0)
             except IndexError:
                 time.sleep(.05)
         if not is_locked(butler.algorithms.memory.lock('fill_queue')):

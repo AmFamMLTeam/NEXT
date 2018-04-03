@@ -61,7 +61,7 @@ class MyApp:
             _butler = Butler(butler.app_id, butler.exp_uid, self.TargetManager, butler.db, butler.ell, alg_label, alg_id)
             app.run_alg(_butler, alg_label, alg, 'processAnswer', {'index': index,
                                                                    'label': label})
-            _, _, index = app.run_alg(_butler, alg_label, alg, 'getQuery', {})
+            _, _, index = alg()
 
         target = butler.targets.get_target_item(butler.exp_uid, index)
         return {'target': target, 'index': index}

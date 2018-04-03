@@ -48,6 +48,7 @@ class MyApp:
         init_algs(alg_args)
 
         butler.experiment.set(key='labels', value=[(seed_i, 1)])
+        butler.experiment.set(key='duplicates', value=0)
 
         return args
 
@@ -55,6 +56,9 @@ class MyApp:
         labels = dict(butler.experiment.get(key='labels'))
         alg_id, alg_label, index = alg()
         while index in labels:
+            debug_print('duplicate query, calling getQuery again...', color='red')
+            duplicates = butler.experiment.increment(key='duplicates')
+            debug_print('{} found so far'.format(duplicates), color='red')
             label = labels[index]
             app = App(butler.app_id, butler.exp_uid, butler.db, butler.ell)
             alg = get_app_alg(butler.app_id, alg_id)

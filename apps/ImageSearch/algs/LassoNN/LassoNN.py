@@ -26,7 +26,7 @@ class LassoNN(NearestNeighbor):
             Cs = [C*2**n for n in xrange(-2, 3)] + [.1*2**n for n in xrange(-2, 3)]
             Cs = list(set(Cs))
             cv = min(sum(y), 3)
-            search = GridSearchCV(NLogisticRegression(N=N, penalty="l1", class_weight="balanced", cv=cv), param_grid={"C": Cs}, scoring=self.scoring, refit=True)
+            search = GridSearchCV(NLogisticRegression(N=N, penalty="l1", class_weight="balanced"), cv=cv, param_grid={"C": Cs}, scoring=self.scoring, refit=True)
             model = search.fit(X[labeled], y).best_estimator_
             self.coefs = model.coef_
             butler.algorithms.set(key='n_coefs', value=np.count_nonzero(self.coefs))

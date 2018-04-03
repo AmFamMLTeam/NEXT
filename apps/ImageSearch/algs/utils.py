@@ -15,8 +15,8 @@ def is_locked(lock):
         return True
 
 
-def can_fit(_y):
-    return _y.count(1) > 1 and _y.count(0) > 1
+def can_fit(_y, min_each=1):
+    return _y.count(1) >= min_each and _y.count(0) > min_each
 
 
 def get_X(butler):
@@ -25,6 +25,8 @@ def get_X(butler):
     if butler.exp_uid not in butler.db.store:
         debug_print('loading features from disk')
         t0 = time.time()
+        while butler.experiment.get(key='args') is None:
+            time.sleep(.1)
         feature_file = butler.experiment.get(key='args')['feature_file']
         feature_file = os.path.join('/', 'next_backend', 'features', feature_file)
         if not feature_file.endswith('.npz'):

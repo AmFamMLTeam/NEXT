@@ -20,12 +20,13 @@ class LassoNN(NearestNeighbor):
         labeled = list(labels.keys())
         y = [labels.get(k) for k in labeled]
         X = get_X(butler)
-        if can_fit(y):
+        if can_fit(y, 2):
             N = butler.algorithms.get(key='N')
             C = butler.algorithms.get(key='C')
             Cs = [C*2**n for n in xrange(-2, 3)] + [.1*2**n for n in xrange(-2, 3)]
             Cs = list(set(Cs))
-            search = GridSearchCV(NLogisticRegression(N=N, penalty="l1", class_weight="balanced"), param_grid={"C": Cs}, scoring=self.scoring, refit=True)
+            cv = min(sum(y), 3)
+            search = GridSearchCV(NLogisticRegression(N=N, penalty="l1", class_weight="balanced", cv=cv), param_grid={"C": Cs}, scoring=self.scoring, refit=True)
             model = search.fit(X[labeled], y).best_estimator_
             self.coefs = model.coef_
             butler.algorithms.set(key='n_coefs', value=np.count_nonzero(self.coefs))

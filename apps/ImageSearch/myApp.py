@@ -1,6 +1,7 @@
 import json
 from next.apps.SimpleTargetManager import SimpleTargetManager
-from next.utils import debug_print
+from next.apps.App import App, Butler
+from next.utils import debug_print, get_app_alg
 import random
 import numpy as np
 import os
@@ -46,16 +47,29 @@ class MyApp:
         alg_args = {'seed_i': seed_i, 'n': n, 'alg_args': args['alg_args']}
         init_algs(alg_args)
 
+        butler.experiment.set(key='labels', value=[(seed_i, 1)])
+
         return args
 
     def getQuery(self, butler, alg, args):
-        index = alg()
+        labels = dict(butler.experiment.get(key='labels'))
+        alg_id, alg_label, index = alg()
+        while index in labels:
+            label = labels[index]
+            app = App(butler.app_id, butler.exp_uid, butler.db, butler.ell)
+            alg = get_app_alg(butler.app_id, alg_id)
+            _butler = Butler(butler.app_id, butler.exp_uid, self.TargetManager, butler.db, butler.ell, alg_label, alg_id)
+            app.run_alg(_butler, alg_label, alg, 'processAnswer', {'index': index,
+                                                                   'label': label})
+            _, _, index = app.run_alg(_butler, alg_label, alg, 'getQuery', {})
+
         target = butler.targets.get_target_item(butler.exp_uid, index)
         return {'target': target, 'index': index}
 
     def processAnswer(self, butler, alg, args):
         index = args['index']
         label = args['label']
+        butler.experiment.append(key='labels', value=(index, label))
         alg_args = {'index': index, 'label': label}
         alg(alg_args)
         return args

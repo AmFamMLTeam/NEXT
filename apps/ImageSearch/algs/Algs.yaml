@@ -16,8 +16,14 @@ initExp:
 
 getQuery:
   rets:
-    description: The triplet to ask about
-    type: num
+    type: tuple
+    values:
+      0:
+        type: str
+      1:
+        type: str
+      2:
+        type: num
 
 
 processAnswer:

@@ -3,6 +3,8 @@ import random
 from apps.ImageSearch.algs.utils import is_locked, get_X
 import time
 
+from next.utils import debug_print
+
 QUEUE_SIZE = 10
 
 
@@ -29,9 +31,10 @@ class BaseAlgorithm(object):
                 time.sleep(.05)
         if not is_locked(butler.algorithms.memory.lock('fill_queue')):
             butler.job('fill_queue', {'queue': butler.algorithms.get(key='queue')})
-        return query
+        return butler.alg_id, butler.alg_label, query
 
     def processAnswer(self, butler, index, label):
+        debug_print('calling {}.processAnswer'.format(butler.alg_label))
         butler.algorithms.increment(key='n_responses', value=1)
         butler.algorithms.append(key='labels', value=(index, label))
         n_positive = butler.algorithms.increment(key='n_positive', value=int(label == 1))

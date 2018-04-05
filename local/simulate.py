@@ -10,7 +10,6 @@ from tqdm import tqdm
 
 NEXT = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(NEXT)
-from local.launch import launch
 from next.apps import test_utils
 
 parser = argparse.ArgumentParser()

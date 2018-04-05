@@ -1,93 +1,59 @@
-"""
-Usage:
-    launch.py <init_filename>
-    launch.py <init_filename> <targets_path>
-
-Arguments:
-    initExp_path (required) : path to a YAML file for arguments to launch experiment
-    targets_path (optional) : yaml file that contains the targets information
-
-Options:
-    -h, --help
-
-Example:
-
-    > cd ~/Developer/NEXT/local/
-    > python launch.py strange_fruit_triplet/init.yaml strange_fruit_triplet/targets.yaml
-
-"""
-
-import os
+import argparse
 import sys
-from collections import OrderedDict
-import base64
 import yaml
-import requests
+from next.apps.test_utils import initExp
+import os
 
-sys.path.append('../next/lib')
-from docopt import docopt
+NEXT = os.path.join(os.path.dirname(__file__), '..')
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-t', '--targets', type=str, required=True)
+parser.add_argument('-X', '--features', type=str, required=True)
+parser.add_argument('-a', '--alg_list', type=str, required=True)
+parser.add_argument('-s', '--seed', type=str, required=True)
 
 
-def get_backend():
-    """
-    Get the backend host and port.
-
-    Defaults to dict(host='localhost', port=8000).
-    """
-    return {
-        'host': os.environ.get('NEXT_BACKEND_GLOBAL_HOST', 'localhost'),
-        'port': os.environ.get('NEXT_BACKEND_GLOBAL_PORT', '8000')
+base_config = {
+    'app_id': 'ImageSearch',
+    'args': {
+        'algorithm_management_settings': {'mode': 'custom'},
+        'participant_to_algorithm_management': 'one_to_many',
+        'instructions': '',
+        'debrief': '',
     }
+}
 
-def launch(init_filename, targets_filename=None):
-    if isinstance(init_filename, dict):
-        init = init_filename
-    else:
-        with open(init_filename, 'r') as f:
-            init = yaml.load(f)
 
-    if targets_filename:
-        with open(targets_filename, 'r') as f:
-            targets = yaml.load(f)
+def main():
+    args = parser.parse_args(sys.argv[1:])
+    config = base_config.copy()
 
-            if 'targets' not in init['args']:
-                init['args']['targets'] = {'targetset': []}
-            init['args']['targets']['targetset'] = targets
+    with open(args.alg_list) as f:
+        alg_list = yaml.load(f)
 
-    # -- encode the experiment definition for transmission to the backend
-    data_header = "data:application/x-yaml;base64,"
+    alg_args = dict()
 
-    encoded_args = base64.encodestring(yaml.dump(init))
-    encoded_attrs = OrderedDict(args=data_header+encoded_args)
+    for alg in alg_list:
+        alg_args[alg['alg_label']] = alg.get('args', {})
+        if 'args' in alg:
+            del alg['args']
 
-    # generate metadata describing each attr's length; this is prepended to the request data.
-    metadata = ';'.join(['{}:{}'.format(k, len(v)) for k, v in encoded_attrs.items()])
+    config['args']['alg_list'] = alg_list
+    config['args']['alg_args'] = alg_args
+    config['args']['feature_file'] = args.features
+    config['args']['seed_target'] = args.seed
 
-    # concat all the encoded attrs together
-    body = ''.join([v for _, v in encoded_attrs.items()])
+    with open(args.targets) as f:
+        targets = yaml.load(f)
 
-    # what we're actually going to send
-    payload = metadata + '\n' + body
+    config['args']['targets'] = {'targetset': targets}
 
-    # -- send the packed experiment definition file
-    host = get_backend()
-    host_url = "http://{host}:{port}".format(**host)
+    _, response = initExp(config)
 
-    r = requests.post(host_url + '/assistant/init/experiment', data=payload)
-    response = r.json()
-    if not response['success']:
-        print('An error occurred launching the experiment:')
-        print(response['message'])
-        sys.exit()
+    print('success!')
 
-    dashboard_url = host_url + '/dashboard/experiment_dashboard/{}/{}'.format(response['exp_uid'], init['app_id'])
-    query_url = host_url + '/query/query_page/query_page/{}'.format(response['exp_uid'])
-    print('Dashboard URL: {}'.format(dashboard_url))
-    print('NEXT Home URL: {}'.format(host_url + '/home'))
-    print('Query URL: {}'.format(query_url))
 
-    return response
+if __name__ == '__main__':
+    main()
 
-if __name__ == "__main__":
-    args = docopt(__doc__)
-    launch(args['<init_filename>'], targets_filename=args['<targets_path>'])

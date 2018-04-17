@@ -51,4 +51,4 @@ def sparse2list(x):
     """
     x = np.ravel(x)
     nonzero = np.ravel(np.argwhere(x != 0))
-    return dict(zip(nonzero, x[nonzero]))
+    return list(zip(nonzero, x[nonzero]))

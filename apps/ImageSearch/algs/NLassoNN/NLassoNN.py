@@ -1,5 +1,7 @@
 from apps.ImageSearch.algs.LassoNN.LassoNN import LassoNN
 
+from next.utils import debug_print
+
 
 class NLassoNN(LassoNN):
     def initExp(self, butler, n, seed_i, alg_args):
@@ -11,5 +13,6 @@ class NLassoNN(LassoNN):
         N = butler.algorithms.get(key='N')
         labels = dict(butler.algorithms.get(key='labels'))
         n_labels = len(labels)
+        debug_print('using n_coefs < {}/{} for {}'.format(n_labels, N, butler.alg_label))
         return lambda n: n < n_labels/N
 

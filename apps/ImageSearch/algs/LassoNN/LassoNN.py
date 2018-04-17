@@ -5,6 +5,8 @@ from apps.ImageSearch.algs.NearestNeighbor.NearestNeighbor import NearestNeighbo
 from apps.ImageSearch.algs.utils import can_fit, get_X, sparse2list
 from apps.ImageSearch.algs.models import ConstrainedLogisticRegression, sparsity_score, constrained_sparsity
 
+from next.utils import debug_print
+
 
 class LassoNN(NearestNeighbor):
     def initExp(self, butler, n, seed_i, alg_args):
@@ -43,5 +45,6 @@ class LassoNN(NearestNeighbor):
         """
         no contraint for vanilla Lasso
         """
+        debug_print('using no constraint for {}'.format(butler.alg_label))
         return lambda _: True
 

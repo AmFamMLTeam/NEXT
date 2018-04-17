@@ -4,6 +4,7 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import cross_val_score
 
 
 class ConstrainedLogisticRegression(LogisticRegression):
@@ -25,6 +26,8 @@ class MarginalRegression:
             warnings.simplefilter('ignore', UserWarning)
             X = preprocessing.scale(X)
         self.coef_ = np.dot(X.T, y)
+        self.X = X
+        self.y = y
         return self
 
     def topfeatures(self, k):
@@ -35,6 +38,33 @@ class MarginalRegression:
         mask = np.zeros(len(self.coef_), dtype=bool)
         mask[topk_indices] = True
         return mask
+
+
+class BestMarginalRegression(MarginalRegression):
+    def fit(self, X, y):
+        super(BestMarginalRegression, self).fit(X, y)
+        max_k = int(np.log2(len(y)))
+        ks = np.power(2*np.ones(max_k), range(max_k)).tolist() + [len(y)]
+        ks = list(set(ks))
+        self.k = ks[0]
+        best_score = -1
+        for k in ks:
+            mask = self.topfeatures(k)
+            score = cross_val_score(LogisticRegression(), X[mask], y, scoring=roc_auc_est_score)
+            if score > best_score:
+                self.k = k
+        return self
+
+    def topfeatures(self, k='best'):
+        if not hasattr(self, 'coef_'):
+            raise Exception('not fit')
+        if k == 'best':
+            k = self.k
+        return super(BestMarginalRegression, self).topfeatures(k)
+
+
+def roc_auc_est_score(est, _X, _y):
+    return roc_auc_score(_y, est.decision_function(_X))
 
 
 def sparsity_score(est, _X, _y):

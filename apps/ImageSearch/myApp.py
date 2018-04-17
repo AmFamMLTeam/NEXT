@@ -17,7 +17,7 @@ class MyApp:
         targets = args['targets']['targetset']
 
         if isinstance(targets, int):
-            targets = [{'image': i} for i in xrange(targets)]
+            targets = [{'image': '{}.jpg'.format(i)} for i in xrange(targets)]
 
         n = len(targets)
         args['n'] = n

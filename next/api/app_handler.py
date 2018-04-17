@@ -38,7 +38,6 @@ class AppHandler(Resource):
             post_parser.add_argument('exp_uid', type=str, required=True, help="Experiment ID Required.")
             post_parser.add_argument('args', type=dict, required=False, help="Experiment args Required.")
 
-
             # Validate args with post_parser
             args_data = post_parser.parse_args()
 
@@ -54,6 +53,7 @@ class AppHandler(Resource):
             # and hit the API with those functions.
             # TODO: test this feature
             # implemented by Scott Sievert, 2016-1-26
+
             response_json, didSucceed, message = broker.applyAsync(app_id, exp_uid, function_name, args_json)
 
             if not didSucceed:
@@ -63,4 +63,4 @@ class AppHandler(Resource):
             return attach_meta(response_dict, meta_success), 200
 
         except Exception, error:
-            return attach_meta({}, meta_error['Error'], backend_error=message)
+            return attach_meta({}, meta_error['Error'], backend_error=str(error))

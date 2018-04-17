@@ -14,5 +14,5 @@ class NLassoNN(LassoNN):
         labels = dict(butler.algorithms.get(key='labels'))
         n_labels = len(labels)
         debug_print('using n_coefs < {}/{} for {}'.format(n_labels, N, butler.alg_label))
-        return lambda n: n < n_labels/N
+        return lambda n: n < n_labels/float(N)
 

@@ -29,7 +29,7 @@ def get_X(butler):
             time.sleep(.1)
         feature_file = butler.experiment.get(key='args')['feature_file']
         feature_file = os.path.join('/', 'next_backend', 'features', feature_file)
-        butler.db.store[butler.exp_uid] = np.load(feature_file, allow_pickle=False)
+        butler.db.store[butler.exp_uid] = np.load(feature_file, allow_pickle=False).astype(np.float16)
         n1 = butler.db.store[butler.exp_uid].shape[0]
         n2 = butler.algorithms.get(key='n')
         if n1 != n2:

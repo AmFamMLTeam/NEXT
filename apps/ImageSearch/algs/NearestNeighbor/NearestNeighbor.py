@@ -20,6 +20,7 @@ class NearestNeighbor(BaseAlgorithm):
         with butler.algorithms.memory.lock('fill_queue'):
             debug_print('filling queue')
             X = self.select_features(butler, {})
+            d = X.shape[1]
             labels = dict(butler.algorithms.get(key='labels'))
             unlabeled = []
             positives = []
@@ -31,10 +32,16 @@ class NearestNeighbor(BaseAlgorithm):
                     positives.append(i)
             target = random.choice(positives)
             x = X[target]
+            a, b = np.polyfit([4096*2, 1], [10000, 424924], 1)
+            n_sample = int(a*d + b)
+            if len(unlabeled) > n_sample:
+                debug_print('sampling {} unlabeled examples'.format(n_sample))
+                unlabeled = random.sample(unlabeled, n_sample)
             X = X[unlabeled]
             debug_print('computing distances')
             t0 = time.time()
-            dists = np.linalg.norm(X - x, axis=1)
+            X = X - x
+            dists = np.linalg.norm(X, axis=1)
             debug_print('took {}s'.format(time.time() - t0))
             dists = np.argsort(dists)
             queries = butler.algorithms.get(key='queries') - butler.algorithms.get(key='last_filled')

@@ -1,6 +1,6 @@
 import random
 
-from apps.ImageSearch.algs.utils import is_locked, get_X
+from apps.ImageSearch.algs.utils import is_locked, get_X, sparse2list
 import time
 
 from next.utils import debug_print
@@ -41,10 +41,12 @@ class BaseAlgorithm(object):
         n_queries = len(butler.algorithms.get(key='labels'))
         n_coefs = butler.algorithms.get(key='n_coefs')
         C = butler.algorithms.get(key='C')
+        coefs = butler.algorithms.get(key='coefs')
         butler.algorithms.append(key='history', value={'n_queries': n_queries,
                                                        'n_positive': n_positive,
                                                        'n_coefs': n_coefs,
-                                                       'C': C})
+                                                       'C': C,
+                                                       'coefs': coefs})
         return True
 
     def getModel(self, _):

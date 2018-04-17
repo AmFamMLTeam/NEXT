@@ -16,7 +16,7 @@ api_interface.add_resource(Experiment,
 
 from next.api.app_handler import AppHandler
 api_interface.add_resource(AppHandler,
-                           '/experiment/<string:exp_uid>/custom/function_name',
+                           '/experiment/<string:exp_uid>/custom/<string:function_name>',
                            '/experiment/custom/<string:function_name>')
 
 from next.api.resources.get_query import getQuery
@@ -39,3 +39,8 @@ api_interface.add_resource(Participants,
 from next.api.resources.targets import Targets
 api_interface.add_resource(Targets,
                            '/experiment/<string:exp_uid>/targets')
+
+
+from next.api.resources.history import History
+api_interface.add_resource(History,
+                           '/experiment/<string:exp_uid>/history')

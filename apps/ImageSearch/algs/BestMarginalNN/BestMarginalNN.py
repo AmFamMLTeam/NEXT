@@ -3,15 +3,18 @@ import numpy as np
 from apps.ImageSearch.algs.NearestNeighbor.NearestNeighbor import NearestNeighbor
 from apps.ImageSearch.algs.utils import can_fit, get_X, sparse2list
 from apps.ImageSearch.algs.models import MarginalRegression
+from sklearn.linear_model import LogisticRegression
 
 
-class MarginalNN(NearestNeighbor):
+# TODO select best!
+
+class BestMarginalNN(NearestNeighbor):
     def initExp(self, butler, n, seed_i, alg_args):
         N = alg_args[butler.alg_label].get('N', 1)
         butler.algorithms.set(key='N', value=N)
         butler.algorithms.set(key='coefs', value=None)
         butler.algorithms.set(key='n_coefs', value=None)
-        return super(MarginalNN, self).initExp(butler, n, seed_i, alg_args)
+        return super(BestMarginalNN, self).initExp(butler, n, seed_i, alg_args)
 
     def select_features(self, butler, _):
         labels = dict(butler.algorithms.get(key='labels'))

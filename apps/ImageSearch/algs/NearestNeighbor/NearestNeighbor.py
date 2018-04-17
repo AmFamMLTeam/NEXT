@@ -48,3 +48,11 @@ class NearestNeighbor(BaseAlgorithm):
             queue_size = max(QUEUE_SIZE, queries * 2)
             self.set_queue(butler, [unlabeled[i] for i in dists[:queue_size]])
             butler.algorithms.set(key='last_filled', value=butler.algorithms.get(key='queries'))
+
+    def constraint(self, butler):
+        """
+        This should return a function that is of the form:
+            f(n_coefficients: int) -> bool
+        That is, takes the number of features used by the model and returns whether that should be included as a possible model.
+        """
+        raise NotImplementedError

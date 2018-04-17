@@ -33,6 +33,7 @@ class MyApp:
                 label_file = label_file + '.npz'
             y = np.load(label_file, allow_pickle=False)
             seed_target = int(random.choice(np.where(y == 1)[0]))
+            seed_target = '{}.jpg'.format(seed_target)
 
         try:
             seed_i = targets.index({'image': seed_target})

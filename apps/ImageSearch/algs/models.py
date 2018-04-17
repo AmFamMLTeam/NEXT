@@ -6,17 +6,13 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
 
-class NLogisticRegression(LogisticRegression):
+class ConstrainedLogisticRegression(LogisticRegression):
     """
-    A version of Logistic Regression that keeps track of an extra parameter N (used for maximum_sparsity scoring) and how many examples were used to train it.
+    A version of Logistic Regression that keeps a constraint function, for using the constrained_sparsity metric
     """
-    def __init__(self, N, penalty, class_weight, C=.1):
-        self.N = N
-        super(NLogisticRegression, self).__init__(penalty=penalty, class_weight=class_weight, C=C)
-
-    def fit(self, _X, _y, sample_weight=None):
-        self.n_trained = len(_y)
-        super(NLogisticRegression, self).fit(_X, _y, sample_weight)
+    def __init__(self, constraint, penalty, class_weight, C=.1):
+        self.constraint = constraint
+        super(ConstrainedLogisticRegression, self).__init__(penalty=penalty, class_weight=class_weight, C=C)
 
 
 class MarginalRegression:
@@ -47,8 +43,8 @@ def sparsity_score(est, _X, _y):
     return sparsity + auc
 
 
-def maximum_sparsity(est, _X, _y):
-    if np.count_nonzero(est.coef_) > (est.n_trained / est.N):
-        return -2
-    else:
+def constrained_sparsity(est, _X, _y):
+    if est.constraint(np.count_nonzero(est.coef_)):
         return roc_auc_score(_y, est.decision_function(_X))
+    else:
+        return -2

@@ -36,3 +36,19 @@ def get_X(butler):
             raise ValueError('feature matrix does not match number of targets! ({}!={})'.format(n1, n2))
         debug_print('took {}s'.format(time.time() - t0))
     return butler.db.store[butler.exp_uid]
+
+
+def sparse2list(x):
+    """
+    Returns a list of the form:
+        [(index, value)]
+    for all nonzero values in x
+
+    e.g.
+        >>> x = np.array([0, 1.1, 0])
+        >>> sparse2list(x)
+        [(1, 1.1)]
+    """
+    x = np.ravel(x)
+    nonzero = np.ravel(np.argwhere(x != 0))
+    return dict(zip(nonzero, x[nonzero]))

@@ -16,7 +16,7 @@ class BestMarginalNN(NearestNeighbor):
         labeled = list(labels.keys())
         y = [labels.get(k) for k in labeled]
         X = get_X(butler)
-        if can_fit(y):
+        if can_fit(y, 3):
             model = BestMarginalRegression().fit(X[labeled], y)
             mask = model.topfeatures('best')
             coefs = model.coef_

@@ -3,6 +3,7 @@ import numpy as np
 from apps.ImageSearch.algs.NearestNeighbor.NearestNeighbor import NearestNeighbor
 from apps.ImageSearch.algs.utils import can_fit, get_X, sparse2list
 from apps.ImageSearch.algs.models import MarginalRegression
+from next.utils import debug_print
 
 
 class NLogNMarginalNN(NearestNeighbor):
@@ -19,9 +20,10 @@ class NLogNMarginalNN(NearestNeighbor):
         y = [labels.get(k) for k in labeled]
         X = get_X(butler)
         if can_fit(y):
-            N = butler.algorithms.get(key='N')
             model = MarginalRegression().fit(X[labeled], y)
-            mask = model.topfeatures(len(y) // np.log10(len(y)))
+            k = int(max(1, len(y) / np.log10(len(y))))
+            debug_print('selecting top {} features'.format(k))
+            mask = model.topfeatures(k)
             coefs = model.coef_
             coefs[np.logical_not(mask)] = 0
             coefs = sparse2list(coefs)

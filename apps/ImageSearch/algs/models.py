@@ -6,6 +6,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import cross_val_score
 
+from next.utils import debug_print
+
 
 class ConstrainedLogisticRegression(LogisticRegression):
     """
@@ -16,7 +18,7 @@ class ConstrainedLogisticRegression(LogisticRegression):
         super(ConstrainedLogisticRegression, self).__init__(penalty=penalty, class_weight=class_weight, C=C)
 
 
-class MarginalRegression:
+class MarginalRegression(object):
     def fit(self, X, y):
         y = np.array(y)
         y[y == 0] = -1
@@ -43,16 +45,19 @@ class MarginalRegression:
 class BestMarginalRegression(MarginalRegression):
     def fit(self, X, y):
         super(BestMarginalRegression, self).fit(X, y)
-        max_k = int(np.log2(len(y)))
+        max_k = int(np.log2(len(y))) + 1
         ks = np.power(2*np.ones(max_k), range(max_k)).tolist() + [len(y)]
-        ks = list(set(ks))
+        ks = list(set(map(int, ks)))
         self.k = ks[0]
         best_score = -1
+        cv = min(3, sum(y))
+        debug_print('trying k={}'.format(ks))
         for k in ks:
             mask = self.topfeatures(k)
-            score = cross_val_score(LogisticRegression(), X[mask], y, scoring=roc_auc_est_score)
-            if score > best_score:
+            score = cross_val_score(LogisticRegression(), X[:, mask], y, scoring=roc_auc_est_score, cv=cv)
+            if np.mean(score) > best_score:
                 self.k = k
+        debug_print('best number of features for marg is {}'.format(self.k))
         return self
 
     def topfeatures(self, k='best'):

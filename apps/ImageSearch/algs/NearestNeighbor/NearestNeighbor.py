@@ -13,7 +13,11 @@ class NearestNeighbor(BaseAlgorithm):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):
             debug_print('fill_queue is running already')
             return
-        queue = butler.algorithms.get(key='queue')
+        try:
+            queue = butler.algorithms.get(key='queue')
+        except AttributeError:
+            debug_print('couldn\'t fill queue, experiment doesn\'t exist yet?')
+            return
         if len(queue) > len(args['queue']):
             debug_print('fill_queue called already')
             return

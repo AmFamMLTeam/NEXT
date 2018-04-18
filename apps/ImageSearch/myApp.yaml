@@ -10,7 +10,7 @@ initExp:
             values:
               alg_id:
                 description: Supported algorithm types for ImageSearch.
-                values: [RandomSampling, NearestNeighbor, LassoNN, NLassoNN, NLogNLassoNN, MarginalNN, MarginalPlusNN, BestMarginalNN, NLogNMarginalNN]
+                values: [RandomSampling, NearestNeighbor, LassoNN, NLassoNN, NLogNLassoNN, MarginalNN, MarginalPlusNN, BestMarginalNN, NLogNMarginalNN, Linear]
         instructions:
           default:
           optional: true

@@ -4,11 +4,16 @@ import time
 import numpy as np
 
 from apps.ImageSearch.algs.base import BaseAlgorithm, QUEUE_SIZE
-from apps.ImageSearch.algs.utils import is_locked
+from apps.ImageSearch.algs.utils import is_locked, can_fit
 from next.utils import debug_print
+
+from sklearn.linear_model import LogisticRegressionCV
 
 
 class Linear(BaseAlgorithm):
+    def linear_model(self):
+        return LogisticRegressionCV(cv=3)
+
     def fill_queue(self, butler, args):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):
             debug_print('fill_queue is running already')
@@ -26,27 +31,38 @@ class Linear(BaseAlgorithm):
             X = self.select_features(butler, {})
             d = X.shape[1]
             labels = dict(butler.algorithms.get(key='labels'))
+            n = butler.algorithms.get(key='n')
+            y = []
             unlabeled = []
             positives = []
-            n = butler.algorithms.get(key='n')
+            labeled = []
             for i in xrange(n):
                 if i not in labels:
                     unlabeled.append(i)
-                elif labels[i] == 1:
-                    positives.append(i)
-            target = random.choice(positives)
-            x = X[target]
-            a, b = np.polyfit([4096*2, 1], [10000, 424924], 1)
-            n_sample = int(a*d + b)
-            if len(unlabeled) > n_sample:
-                debug_print('sampling {} unlabeled examples'.format(n_sample))
-                unlabeled = random.sample(unlabeled, n_sample)
-            X = X[unlabeled]
-            debug_print('computing distances')
-            t0 = time.time()
-            dists = np.matmul(X, x)
-            debug_print('took {}s'.format(time.time() - t0))
-            dists = np.argsort(-dists)
+                else:
+                    labeled.append(i)
+                    y.append(labels[i])
+                    if labels[i] == 1:
+                        positives.append(i)
+            if can_fit(y, 3):
+                model = self.linear_model()
+                model = model.fit(X[labeled], y)
+                dists = np.dot(X[unlabeled], np.ravel(model.coef_))
+                dists = np.argsort(-dists)
+            else:
+                target = random.choice(positives)
+                x = X[target]
+                a, b = np.polyfit([4096*2, 1], [10000, 424924], 1)
+                n_sample = int(a*d + b)
+                if len(unlabeled) > n_sample:
+                    debug_print('sampling {} unlabeled examples'.format(n_sample))
+                    unlabeled = random.sample(unlabeled, n_sample)
+                X = X[unlabeled]
+                debug_print('computing distances')
+                t0 = time.time()
+                dists = np.linalg.norm(X - x, axis=1)
+                debug_print('took {}s'.format(time.time() - t0))
+                dists = np.argsort(dists)
             queries = butler.algorithms.get(key='queries') - butler.algorithms.get(key='last_filled')
             queue_size = max(QUEUE_SIZE, queries * 2)
             self.set_queue(butler, [unlabeled[i] for i in dists[:queue_size]])

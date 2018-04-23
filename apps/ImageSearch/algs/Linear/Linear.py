@@ -11,8 +11,8 @@ from sklearn.linear_model import LogisticRegressionCV
 
 
 class Linear(BaseAlgorithm):
-    def linear_model(self):
-        return LogisticRegressionCV(cv=3)
+    def linear_model(self, cv=3):
+        return LogisticRegressionCV(cv=cv)
 
     def fill_queue(self, butler, args):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):
@@ -44,8 +44,9 @@ class Linear(BaseAlgorithm):
                     y.append(labels[i])
                     if labels[i] == 1:
                         positives.append(i)
-            if can_fit(y, 3):
-                model = self.linear_model()
+            if can_fit(y, 2):
+                cv = min(3, sum(y))
+                model = self.linear_model(cv=cv)
                 model = model.fit(X[labeled], y)
                 dists = np.dot(X[unlabeled], np.ravel(model.coef_))
                 dists = np.argsort(-dists)

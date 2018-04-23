@@ -19,7 +19,7 @@ class NLogNMarginalNN(NearestNeighbor):
         labeled = list(labels.keys())
         y = [labels.get(k) for k in labeled]
         X = get_X(butler)
-        if can_fit(y):
+        if can_fit(y, 2):
             model = MarginalRegression().fit(X[labeled], y)
             k = int(max(1, len(y) / np.log10(len(y))))
             debug_print('selecting top {} features'.format(k))

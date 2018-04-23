@@ -23,7 +23,7 @@ class LassoNN(NearestNeighbor):
         labeled = list(labels.keys())
         y = [labels.get(k) for k in labeled]
         X = get_X(butler)
-        if can_fit(y, 3):
+        if can_fit(y, 2):
             constraint = self.constraint(butler)
             C = butler.algorithms.get(key='C')
             Cs = [C*2**n for n in xrange(-2, 3)] + [.1*2**n for n in xrange(-2, 3)]

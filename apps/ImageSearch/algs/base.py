@@ -45,8 +45,7 @@ class BaseAlgorithm(object):
         butler.algorithms.append(key='history', value={'n_queries': n_queries,
                                                        'n_positive': n_positive,
                                                        'n_coefs': n_coefs,
-                                                       'C': C,
-                                                       'coefs': coefs})
+                                                       'C': C})
         return True
 
     def getModel(self, _):

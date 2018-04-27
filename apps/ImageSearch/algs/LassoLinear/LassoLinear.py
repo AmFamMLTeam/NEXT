@@ -14,6 +14,7 @@ class LassoLinear(Linear):
         butler.algorithms.set(key='C', value=.1)
         butler.algorithms.set(key='coefs', value=None)
         butler.algorithms.set(key='n_coefs', value=None)
+        return super(LassoLinear, self).__init__(butler, n, seed_i, alg_args)
 
     @property
     def scoring(self):

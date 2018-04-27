@@ -20,9 +20,6 @@ class LassoLinear(Linear):
     def scoring(self):
         return constrained_sparsity
 
-    def linear_model(self, cv=3):
-        return LogisticRegressionCV(cv=cv, penalty='l1')
-
     def constraint(self, butler):
         """
         no contraint for vanilla Lasso

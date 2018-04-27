@@ -7,6 +7,11 @@ import numpy as np
 import os
 
 
+ROOF_LABEL_FILE = ''
+LOAD_ROOF = False
+SAVE_LABELS = False
+
+
 class MyApp:
     def __init__(self, db):
         self.app_id = 'ImageSearch'
@@ -48,7 +53,12 @@ class MyApp:
         alg_args = {'seed_i': seed_i, 'n': n, 'alg_args': args['alg_args']}
         init_algs(alg_args)
 
-        butler.experiment.set(key='labels', value=[(seed_i, 1)])
+        if LOAD_ROOF and os.path.exists(ROOF_LABEL_FILE):
+            with open(ROOF_LABEL_FILE) as f:
+                roof_labels = json.load(f)
+            butler.experiment.set(key='labels', value=roof_labels)
+        else:
+            butler.experiment.set(key='labels', value=[(seed_i, 1)])
         butler.experiment.set(key='duplicates', value=0)
 
         return args
@@ -78,6 +88,10 @@ class MyApp:
         butler.experiment.append(key='labels', value=(index, label))
         alg_args = {'index': index, 'label': label}
         alg(alg_args)
+        if SAVE_LABELS:
+            with butler.experiment.memory.lock('save_labels'):
+                with open('labels.{}.json'.format(butler.exp_uid), 'w') as f:
+                    json.dump(butler.experiment.get(key='labels'), f)
         return args
 
     def getModel(self, butler, alg, args):

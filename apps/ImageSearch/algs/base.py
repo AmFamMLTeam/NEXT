@@ -1,6 +1,6 @@
 import random
 
-from apps.ImageSearch.algs.utils import is_locked, get_X, sparse2list
+from apps.ImageSearch.algs.utils import is_locked, get_X
 import time
 
 from next.utils import debug_print
@@ -18,6 +18,8 @@ class BaseAlgorithm(object):
         butler.algorithms.set(key='queue', value=[])
         butler.algorithms.set(key='queries', value=0)
         butler.algorithms.set(key='last_filled', value=0)
+        butler.algorithms.set(key='fill_queue_time', value=None)
+        butler.algorithms.set(key='select_features_time', value=None)
         butler.job('fill_queue', {'queue': []})
         return True
 
@@ -42,10 +44,15 @@ class BaseAlgorithm(object):
         n_coefs = butler.algorithms.get(key='n_coefs')
         C = butler.algorithms.get(key='C')
         coefs = butler.algorithms.get(key='coefs')
+        fill_queue_time = butler.algorithms.get(key='fill_queue_time')
+        select_features_time = butler.algorithms.get(key='select_features_time')
         butler.algorithms.append(key='history', value={'n_queries': n_queries,
                                                        'n_positive': n_positive,
                                                        'n_coefs': n_coefs,
-                                                       'C': C})
+                                                       'C': C,
+                                                       'coefs': coefs,
+                                                       'fill_queue_time': fill_queue_time,
+                                                       'select_features_time': select_features_time})
         return True
 
     def getModel(self, _):

@@ -7,6 +7,8 @@ from apps.ImageSearch.algs.base import BaseAlgorithm, QUEUE_SIZE
 from apps.ImageSearch.algs.utils import is_locked
 from next.utils import debug_print
 
+import time
+
 
 class NearestNeighbor(BaseAlgorithm):
     def fill_queue(self, butler, args):
@@ -24,6 +26,7 @@ class NearestNeighbor(BaseAlgorithm):
         with butler.algorithms.memory.lock('fill_queue'):
             debug_print('filling queue')
             X = self.select_features(butler, {})
+            t0 = time.time()
             d = X.shape[1]
             labels = dict(butler.algorithms.get(key='labels'))
             unlabeled = []
@@ -52,6 +55,7 @@ class NearestNeighbor(BaseAlgorithm):
             queue_size = max(QUEUE_SIZE, queries * 2)
             self.set_queue(butler, [unlabeled[i] for i in dists[:queue_size]])
             butler.algorithms.set(key='last_filled', value=butler.algorithms.get(key='queries'))
+            butler.algorithms.set(key='fill_queue_time', value=time.time() - t0)
 
     def constraint(self, butler):
         """

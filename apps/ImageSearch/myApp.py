@@ -29,6 +29,7 @@ class MyApp:
 
         if 'seed_target' in args:
             seed_target = args['seed_target']
+            seeds = None
         else:
             debug_print('seed_target not given, picking random one using label_file')
             if 'label_file' not in args:
@@ -37,11 +38,14 @@ class MyApp:
             if not label_file.endswith('.npz'):
                 label_file = label_file + '.npz'
             y = np.load(label_file, allow_pickle=False)
-            seed_target = int(random.choice(np.where(y == 1)[0]))
+            seeds = random.sample(np.where(y == 1)[0].tolist(), 3)
+            seed_target = seeds[0]
             seed_target = '{}.jpg'.format(seed_target)
 
         try:
             seed_i = targets.index({'image': seed_target})
+            if seeds is None:
+                seeds = [seed_i]
         except ValueError as e:
             debug_print('seed {} not found in targets'.format(seed_target))
             raise e
@@ -50,7 +54,7 @@ class MyApp:
         self.TargetManager.set_targetset(butler.exp_uid, targets)
         del args['targets']
 
-        alg_args = {'seed_i': seed_i, 'n': n, 'alg_args': args['alg_args']}
+        alg_args = {'seed_i': seeds, 'n': n, 'alg_args': args['alg_args']}
         init_algs(alg_args)
 
         if LOAD_ROOF and os.path.exists(ROOF_LABEL_FILE):
@@ -60,6 +64,7 @@ class MyApp:
         else:
             butler.experiment.set(key='labels', value=[(seed_i, 1)])
         butler.experiment.set(key='duplicates', value=0)
+        butler.experiment.set(key='n_answers', value=0)
 
         return args
 
@@ -86,9 +91,10 @@ class MyApp:
         index = args['index']
         label = args['label']
         butler.experiment.append(key='labels', value=(index, label))
+        n_answers = butler.experiment.increment(key='n_answers', value=1)
         alg_args = {'index': index, 'label': label}
         alg(alg_args)
-        if SAVE_LABELS:
+        if SAVE_LABELS and (n_answers % 10) == 0:
             with butler.experiment.memory.lock('save_labels'):
                 with open('labels.{}.json'.format(butler.exp_uid), 'w') as f:
                     json.dump(butler.experiment.get(key='labels'), f)

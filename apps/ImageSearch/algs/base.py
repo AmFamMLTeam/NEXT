@@ -10,7 +10,7 @@ QUEUE_SIZE = 10
 
 class BaseAlgorithm(object):
     def initExp(self, butler, n, seed_i, alg_args):
-        butler.algorithms.set(key='labels', value=[(seed_i, 1)])
+        butler.algorithms.set(key='labels', value=[(i, 1) for i in seed_i])
         butler.algorithms.set(key='n_positive', value=0)
         butler.algorithms.set(key='n_responses', value=0)
         butler.algorithms.set(key='n', value=n)

@@ -5,7 +5,7 @@ initExp:
       type: num
     seed_i:
       description: Index of seeds
-      type: num
+      type: any
     alg_args:
       type: any
   rets:

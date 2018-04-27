@@ -47,7 +47,10 @@ class LassoLinear(Linear):
             self.C = model.get_params()["C"]
             mask = np.ravel(model.coef_.astype(bool))
             butler.algorithms.set(key='select_features_time', value=time.time() - t0)
-            return X[:, mask]
+            if sum(mask) == 0:
+                return X
+            else:
+                return X[:, mask]
         else:
             return X
 

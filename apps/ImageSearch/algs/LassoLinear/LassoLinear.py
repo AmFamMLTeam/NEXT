@@ -4,6 +4,6 @@ from apps.ImageSearch.algs.Linear.Linear import Linear
 
 
 class LassoLinear(Linear):
-    def linear_model(self):
-        return LogisticRegressionCV(cv=3, penalty='l1')
+    def linear_model(self, cv=3):
+        return LogisticRegressionCV(cv=cv, penalty='l1')
 

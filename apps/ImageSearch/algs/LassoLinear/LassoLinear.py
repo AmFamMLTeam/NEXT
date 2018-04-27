@@ -13,7 +13,7 @@ class LassoLinear(Linear):
     def initExp(self, butler, n, seed_i, alg_args):
         butler.algorithms.set(key='C', value=.1)
         butler.algorithms.set(key='coefs', value=None)
-        butler.algorithms.set(key='n_coefs', value=np.count_nonzero(self.coefs))
+        butler.algorithms.set(key='n_coefs', value=None)
 
     @property
     def scoring(self):

@@ -19,6 +19,7 @@ class BaseAlgorithm(object):
         butler.algorithms.set(key='queries', value=0)
         butler.algorithms.set(key='last_filled', value=0)
         butler.algorithms.set(key='fill_queue_time', value=None)
+        butler.algorithms.set(key='n_fill_queues', value=0)
         butler.algorithms.set(key='select_features_time', value=None)
         butler.job('fill_queue', {'queue': []})
         return True
@@ -46,12 +47,14 @@ class BaseAlgorithm(object):
         coefs = butler.algorithms.get(key='coefs')
         fill_queue_time = butler.algorithms.get(key='fill_queue_time')
         select_features_time = butler.algorithms.get(key='select_features_time')
+        n_fill_queues = butler.algorithms.get(key='n_fill_queues')
         butler.algorithms.append(key='history', value={'n_queries': n_queries,
                                                        'n_positive': n_positive,
                                                        'n_coefs': n_coefs,
                                                        'C': C,
                                                        'coefs': coefs,
                                                        'fill_queue_time': fill_queue_time,
+                                                       'n_fill_queues': n_fill_queues,
                                                        'select_features_time': select_features_time})
         return True
 
@@ -65,6 +68,7 @@ class BaseAlgorithm(object):
         butler.algorithms.set(key='queue', value=[])
         for q in queries:
             butler.algorithms.append(key='queue', value=q)
+        butler.algorithms.increment(key='n_fill_queues')
 
     def fill_queue(self, butler, args):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):

@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 from apps.ImageSearch.algs.base import BaseAlgorithm, QUEUE_SIZE
-from apps.ImageSearch.algs.utils import is_locked, can_fit
+from apps.ImageSearch.algs.utils import is_locked, can_fit, sparse2list
 from next.utils import debug_print
 
 from sklearn.linear_model import LogisticRegressionCV
@@ -49,7 +49,15 @@ class Linear(BaseAlgorithm):
                 cv = min(3, sum(y))
                 model = self.linear_model(cv=cv)
                 model = model.fit(X[labeled], y)
-                dists = np.dot(X[unlabeled], np.ravel(model.coef_))
+                # mask helps if features are sparse
+                mask = np.ravel(model.coef_.astype(bool))
+                if butler.alg_id == 'LassoLinear':
+                    butler.algorithms.set(key='n_coefs', value=sum(mask))
+                    sparse_coefs = sparse2list(model.coef_)
+                    butler.algorithms.set(key='coefs', value=sparse_coefs)
+                X = X[:, mask]
+                coefs = np.ravel(model.coef_)[mask]
+                dists = np.dot(X[unlabeled], coefs)
                 dists = np.argsort(-dists)
             else:
                 target = random.choice(positives)

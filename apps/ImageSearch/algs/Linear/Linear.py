@@ -5,6 +5,7 @@ import numpy as np
 
 from apps.ImageSearch.algs.base import BaseAlgorithm, QUEUE_SIZE
 from apps.ImageSearch.algs.utils import is_locked, can_fit, sparse2list
+from apps.ImageSearch.algs.models import roc_auc_est_score
 from next.utils import debug_print
 
 from sklearn.linear_model import LogisticRegressionCV
@@ -12,7 +13,7 @@ from sklearn.linear_model import LogisticRegressionCV
 
 class Linear(BaseAlgorithm):
     def linear_model(self, cv=3):
-        return LogisticRegressionCV(cv=cv)
+        return LogisticRegressionCV(cv=cv, scoring=roc_auc_est_score)
 
     def fill_queue(self, butler, args):
         if is_locked(butler.algorithms.memory.lock('fill_queue')):

@@ -55,7 +55,8 @@ class Linear(BaseAlgorithm):
                     butler.algorithms.set(key='n_coefs', value=sum(mask))
                     sparse_coefs = sparse2list(model.coef_)
                     butler.algorithms.set(key='coefs', value=sparse_coefs)
-                X = X[:, mask]
+                if sum(mask):
+                    X = X[:, mask]
                 coefs = np.ravel(model.coef_)[mask]
                 dists = np.dot(X[unlabeled], coefs)
                 dists = np.argsort(-dists)
